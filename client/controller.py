@@ -50,9 +50,11 @@ class Controller(object):
             end_date = None
         else:
             end_date = utils.from_human_readable(end_date)
+        self.settings.xkcd = not self.settings.xkcd
+        self.mainframe.panel_matplotlib.reset_figure(self.settings.xkcd)
         axis = self.mainframe.panel_matplotlib.axes
         df = self.model.get_pandas_dataframe()
-        plots.draw_plot(mode, axis, df, start_date, end_date)
+        plots.draw_plot(mode, axis, df, start_date, end_date, self.settings.xkcd)
         self.mainframe.panel_matplotlib.canvas.draw()
 
     def OnCreate(self, event):
@@ -76,6 +78,10 @@ class Controller(object):
     def OnDateEditableChange(self, event):
         self.settings.date_chooseable = event.IsChecked()
         self._apply_settings_entries()
+
+    def OnSetXkcd(self, event):
+        self.settings.xkcd = event.IsChecked()
+        self.OnPlotModeChange(event)
 
     def OnSatzDelete(self, event):
         deleted = self.mainframe.SatzDeleteListCtrl.deleted.keys()

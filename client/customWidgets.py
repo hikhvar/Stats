@@ -5,6 +5,8 @@ import wx
 import wx.lib.mixins.listctrl
 import matplotlib
 matplotlib.use('WXAgg')
+import matplotlib.pyplot as plt
+
 
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -53,17 +55,32 @@ class PlotPanel(wx.Panel):
 
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
-        self.figure = Figure()
-        self.axes = self.figure.add_subplot(111)
-        self.canvas = FigureCanvas(self, -1, self.figure)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.SetSizer(self.sizer)
-        self.Fit()
 
-        #x = range(1, 20)
-        #y = map(lambda x: x*x, x)
-        #self.axes.plot(x,y)
+    def reset_figure(self, xkcd):
+        if xkcd == True:
+            context = plt.xkcd
+        else:
+            context = self._get_dummy()
+        with context():
+            self.figure = Figure()
+            self.axes = self.figure.add_subplot(111)
+            self.canvas = FigureCanvas(self, -1, self.figure)
+            self.sizer.Remove(0)
+            self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+            self.Fit()
+
+
+    def _get_dummy(self):
+        class dummy():
+            def __enter__(self, *args):
+                pass
+
+            def __exit__(self, *args):
+                pass
+
+        return dummy
 
 class SatzCheckListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.CheckListCtrlMixin):
 
