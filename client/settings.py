@@ -11,3 +11,4 @@ class DefaultSettings(object):
         self.schuetzen_file = "schuetzen.json"
         self.data_file = "data.json"
         self.model = model.json_model.JSONModel
+        self.xkcd = False

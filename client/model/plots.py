@@ -2,12 +2,16 @@
 import numpy as np
 import itertools
 #import scipy.stats as stats
+import matplotlib
+matplotlib.use('WXAgg')
+import matplotlib.pyplot as plt
+
 
 
 def get_plot_modes():
-    return REGISTERED_PLOTS.keys()
+    return sorted(REGISTERED_PLOTS.keys())
 
-def draw_plot(mode, axis, dataframe, start=None, end=None):
+def draw_plot(mode, axis, dataframe, start=None, end=None, xkcd = False):
     axis.cla()
     if start is None:
         start = 0
@@ -17,19 +21,12 @@ def draw_plot(mode, axis, dataframe, start=None, end=None):
         return
     df = dataframe[(dataframe.date >= start) & (dataframe.date <=end)]
     function, kwargs = REGISTERED_PLOTS[mode]
-    function(axis, df, **kwargs)
-    # if mode == "Verlauf des Durchschnitts":
-    #     _plot_average(axis, df)
-    # if mode == "Verlauf der Abweichung":
-    #     _plot_average(axis, df, True)
-    # if mode == "Theo. Verteilung":
-    #     _plot_distribution(axis, df)
-    # if mode == "Verteilung":
-    #     _plot_histogram(axis, df)
-    # if mode == "Team Verteilung mean":
-    #     _plot_team_distribution(axis, df, _sort_mean_first)
-    # if mode == "Team Verteilung std.":
-    #     _plot_team_distribution(axis, df, _sort_std_first)
+    if xkcd == True:
+        with plt.xkcd():
+            function(axis, df, **kwargs)
+    else:
+        function(axis, df, **kwargs)
+
 
 def normpdf(x, mu, sigma):
     u = (x-mu)/(1.0 * np.abs(sigma))
@@ -180,5 +177,5 @@ REGISTERED_PLOTS = {
     "Verteilung"                    : (_plot_histogram, {}),
     "Team Verteilung mean"          : (_plot_team_distribution, {"sort_function":_sort_mean_first}),
     "Team Verteilung std."          : (_plot_team_distribution, {"sort_function":_sort_std_first}),
-    "Beteiligung"                     : (_plot_activity, {})
+    "Beteiligung"                   : (_plot_activity, {})
 }
