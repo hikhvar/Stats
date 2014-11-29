@@ -250,6 +250,9 @@ class JSONEvent(Event):
         }
         return json.dumps(dic)
 
+    def __repr__(self):
+        return "JSONEvent[date=%s,uuid=%s]" % (self.date, str(self.uuid))
+
 class JSONSatz(Satz):
 
     @classmethod

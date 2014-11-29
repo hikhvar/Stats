@@ -1,13 +1,14 @@
 # -*- coding: UTF-8 -*-
 import numpy as np
 import itertools
+import random
 #import scipy.stats as stats
 
 
 def get_plot_modes():
     return REGISTERED_PLOTS.keys()
 
-def draw_plot(mode, axis, dataframe, start=None, end=None):
+def draw_plot(mode, axis, dataframe, events, start=None, end=None):
     axis.cla()
     if start is None:
         start = 0
@@ -15,9 +16,10 @@ def draw_plot(mode, axis, dataframe, start=None, end=None):
         end = float("inf")
     if len(dataframe) < 1:
         return
+    events = filter(lambda x: x.date >= start and x.date <= end, events)
     df = dataframe[(dataframe.date >= start) & (dataframe.date <=end)]
     function, kwargs = REGISTERED_PLOTS[mode]
-    function(axis, df, **kwargs)
+    function(axis, df, events, **kwargs)
     # if mode == "Verlauf des Durchschnitts":
     #     _plot_average(axis, df)
     # if mode == "Verlauf der Abweichung":
@@ -36,8 +38,8 @@ def normpdf(x, mu, sigma):
     y = (1.0/(np.sqrt(2.0*np.pi)*np.abs(sigma)))*np.exp(-u*u/2.0)
     return y
 
-def _plot_average(axis, df, plot_std = False):
-    dates, date_mapping = _get_datemapping(df)
+def _plot_average(axis, df, events, plot_std = False):
+    dates, date_mapping = _get_datemapping(df, events)
     for schuetze in df.schuetze.unique():
         df_sub = df[df.schuetze == schuetze]
         agg = df_sub.groupby("human_readable")["result"].agg(func=np.mean)
@@ -59,9 +61,10 @@ def _plot_average(axis, df, plot_std = False):
     axis.set_xticks(list(xrange(len(dates))))
     axis.set_xticklabels(dates)
     axis.margins(0.1)
+    _make_events(axis, events, date_mapping)
     _make_legend(axis)
 
-def _plot_distribution(axis, df):
+def _plot_distribution(axis, df, events):
     for schuetze in df.schuetze.unique():
         df_sub = df[df.schuetze == schuetze]
         mean, std = np.mean(df_sub.result), np.std(df_sub.result)
@@ -74,7 +77,7 @@ def _plot_distribution(axis, df):
     axis.set_xlim(40,55)
     _make_legend(axis)
 
-def _plot_histogram(axis, df):
+def _plot_histogram(axis, df, events):
     for schuetze in df.schuetze.unique():
         df_sub = df[df.schuetze == schuetze]
         hist,_ = np.histogram(df_sub.result, bins=545, density=True, range=(0,54.5))
@@ -83,7 +86,7 @@ def _plot_histogram(axis, df):
     axis.set_xlim(40,55)
     _make_legend(axis)
 
-def _plot_team_distribution(axis, df, sort_function=None):
+def _plot_team_distribution(axis, df, events, sort_function=None):
     def _get_starting(fullname):
         name = fullname.split(" ")
         name = map(lambda x: x[0], name)
@@ -114,11 +117,11 @@ def _plot_team_distribution(axis, df, sort_function=None):
     axis.set_xlim(180, 218,)
     _make_legend(axis)
 
-def _plot_activity(axis, df):
+def _plot_activity(axis, df, events):
     """
         plot the activity over time.
     """
-    dates, date_mapping = _get_datemapping(df)
+    dates, date_mapping = _get_datemapping(df, events)
     agg = df.groupby("human_readable")["result"].agg(func=len)
     agg_schuetzen = df.groupby("human_readable")["schuetze"].agg(func=_unique)
     x = []
@@ -133,15 +136,17 @@ def _plot_activity(axis, df):
     axis.plot(x,normed_y,label="Erfasste Saetze pro Schuetze", marker="o")
     #axis.plot(x, y, label="Saetze gesamt", marker="o")
     axis.plot(x, n, label="Schuetzen", marker="o")
+
     axis.set_xticks(list(xrange(len(dates))))
     axis.set_xticklabels(dates)
     axis.margins(0.1)
+    _make_events(axis, events, date_mapping)
     _make_legend(axis)
 
 def _unique(series):
     return series.nunique()
 
-def _get_datemapping(df):
+def _get_datemapping(df, events):
     """
         return the mapping of human_readable dates to 
         integer numbers for plotting. Mapping is a dict.
@@ -151,6 +156,18 @@ def _get_datemapping(df):
     date_mapping = {}
     for index, d in enumerate(dates):
         date_mapping[d] = index
+    timestamp_mapping = {}
+    for d in dates:
+        df_sub = df[df.human_readable == d]
+        timestamp_mapping[d] = df_sub.date.unique()[0]
+    for event in events:
+        for i in xrange(len(dates)-1):
+            if timestamp_mapping[dates[i]] <= event.date and timestamp_mapping[dates[i+1]] > event.date:
+                datediff = timestamp_mapping[dates[i+1]] - timestamp_mapping[dates[i]]
+                eventdiff = event.date - timestamp_mapping[dates[i]]
+                offset = eventdiff / datediff
+                date_mapping[event.get_human_readable_date()] = date_mapping[dates[i]] + offset
+                break
     return dates, date_mapping
 
 def _sort_mean_first(best):
@@ -170,6 +187,16 @@ def _sort_std_first(best):
 def _make_legend(axis):
     if len(axis.get_lines()) > 0:
         axis.legend(loc=2)
+
+def _make_events(axis, events, date_mapping):
+    ymin, ymax = axis.get_yaxis().get_data_interval()
+    yspan = ymax - ymin
+    for event in events:
+        ypos = ymax - yspan * 0.2 * random.random()
+        axis.axvline(date_mapping[event.get_human_readable_date()], linestyle="--", color="0.25")
+        axis.text(date_mapping[event.get_human_readable_date()]+0.1,ypos, event.description, color="0.25")
+
+
 
 
 # Name of plot : (function, kwargs)

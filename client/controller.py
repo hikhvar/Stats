@@ -54,7 +54,8 @@ class Controller(object):
             end_date = utils.from_human_readable(end_date)
         axis = self.mainframe.panel_matplotlib.axes
         df = self.model.get_pandas_dataframe()
-        plots.draw_plot(mode, axis, df, start_date, end_date)
+        events = self.model.events
+        plots.draw_plot(mode, axis, df, events, start_date, end_date)
         self.mainframe.panel_matplotlib.canvas.draw()
 
     def OnCreate(self, event):
@@ -95,6 +96,7 @@ class Controller(object):
 
     def OnEventEntry(self, event):
         description = self.mainframe.text_ctrl_event_description.GetValue()
+        self.mainframe.text_ctrl_event_description.SetValue("")
         date = self.mainframe.datepicker_ctrl_event.GetValue()
         date = self._to_datetime(date)
         self.model.add_event(date, description)
