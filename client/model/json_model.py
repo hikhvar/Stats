@@ -75,17 +75,6 @@ class JSONModel(Model):
                 f.write(obj.to_json())
                 f.write("\n")
 
-    def schuetze_exists(self, fullname):
-        """
-            return true if there is a schuetze
-            with this full name.
-        """
-        schuetzen = self.get_all_schuetzen()
-        for s in schuetzen:
-            if s.get_fullname() == fullname:
-                return True
-        return False
-
     def add_schuetze(self, name, surname):
         """
             add the schuetze with the given name and surname.
@@ -153,16 +142,6 @@ class JSONModel(Model):
 
     def get_all_schuetzen(self):
         return self.schuetzen
-
-    def get_all_dates(self):
-        dates = set([])
-        for entry in self.data:
-            dates.add(entry.date)
-        if len(dates) == 0:
-            return None
-        dates = sorted(list(dates))
-        dates = map(lambda x: utils.to_human_readable(x), dates)
-        return dates
 
     def get_all_satz_entries(self):
         return self.data

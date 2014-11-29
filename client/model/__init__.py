@@ -92,6 +92,27 @@ class Model (object):
             retval.append(tmp)
         return retval
 
+    def schuetze_exists(self, fullname):
+        """
+            return true if there is a schuetze
+            with this full name.
+        """
+        schuetzen = self.get_all_schuetzen()
+        for s in schuetzen:
+            if s.get_fullname() == fullname:
+                return True
+        return False
+
+    def get_all_dates(self):
+        dates = set([])
+        for entry in self.get_all_satz_entries():
+            dates.add(entry.date)
+        if len(dates) == 0:
+            return None
+        dates = sorted(list(dates))
+        dates = map(lambda x: utils.to_human_readable(x), dates)
+        return dates
+
     def get_plot_modes(self):
         """
             return a list of strings with all available plot modes.
