@@ -11,6 +11,7 @@ class Controller(object):
     def __init__(self):
         self.settings = DefaultSettings()
         self.model = self.settings.model(self.settings)
+        self.model.load_data()
 
     def set_mainframe(self, mainframe):
         self.mainframe = mainframe

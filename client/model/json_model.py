@@ -11,6 +11,7 @@ import pprint
 from model import Model, Schuetze, Satz
 import uuid
 import plots
+import gzip
 
 class JSONModel(Model):
     """
@@ -21,20 +22,27 @@ class JSONModel(Model):
 
     def __init__(self, settings):
         super(JSONModel, self).__init__(settings)
+        self.openfunction = open
+        self.data = []
+        self.schuetzen = []
+
+    def load_data(self):
+        """
+            load the data from store dir or create store dir
+            if not exists.
+        """
         if os.path.exists(self.settings.store_dir):
             self.data = self._load_data(self.settings.store_dir)
             self.schuetzen = self._load_schuetzen(self.settings.store_dir)
         else:
             os.makedirs(self.settings.store_dir)
-            self.data = []
-            self.schuetzen = []
 
     def _generic_load_data(self, filename, cls):
         data = []
         filepath = os.path.join(self.settings.store_dir, filename)
         if not os.path.exists(filepath):
             return data
-        with open(filepath, "r") as f:
+        with self.openfunction(filepath, "r") as f:
             for line in f:
                 instance = cls.from_json(line)
                 data.append(instance)
@@ -44,21 +52,21 @@ class JSONModel(Model):
         """
             load the data from the file.
         """
-        return self._generic_load_data("data.json", JSONSatz)
+        return self._generic_load_data(self.settings.data_file, JSONSatz)
 
     def _load_schuetzen(self, dirpath):
-        return self._generic_load_data("schuetzen.json", JSONSchuetze)
+        return self._generic_load_data(self.settings.schuetzen_file, JSONSchuetze)
 
     def _generic_add_data(self, obj, filename):
         filepath = os.path.join(self.settings.store_dir, filename)
-        with open(filepath, "a") as f:
+        with self.openfunction(filepath, "a") as f:
             string = obj.to_json()
             f.write(string)
             f.write("\n")
 
     def _gerneric_rewrite_data(self, datalist, filename):
         filepath = os.path.join(self.settings.store_dir, filename)
-        with open(filepath, "w") as f:
+        with self.openfunction(filepath, "w") as f:
             for obj in datalist:
                 f.write(obj.to_json())
                 f.write("\n")
@@ -181,6 +189,12 @@ class JSONModel(Model):
         if len(df) >= 1:
             df['human_readable'] = df.date.apply(utils.to_human_readable)
         return df
+
+class CompressedJSONModel(JSONModel):
+
+    def __init__(self, settings):
+        super(CompressedJSONModel, self).__init__(settings)
+        self.openfunction = gzip.open
 
 
 class JSONSchuetze(Schuetze):

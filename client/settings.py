@@ -8,6 +8,6 @@ class DefaultSettings(object):
         self.date_chooseable = False
         self.enable_delete = False
         self.store_dir = "data"
-        self.schuetzen_file = "schuetzen.json"
-        self.data_file = "data.json"
-        self.model = model.json_model.JSONModel
+        self.schuetzen_file = "schuetzen.json.gz"
+        self.data_file = "data.json.gz"
+        self.model = model.json_model.CompressedJSONModel
