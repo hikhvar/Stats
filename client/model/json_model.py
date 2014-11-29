@@ -8,7 +8,7 @@ import utils
 import collections
 import numpy as np
 import pprint
-from model import Model, Schuetze, Satz
+from model import Model, Schuetze, Satz, Event
 import uuid
 import plots
 import gzip
@@ -25,8 +25,9 @@ class JSONModel(Model):
         self.openfunction = open
         self.data = []
         self.schuetzen = []
+        self.events = []
 
-    def load_data(self):
+    def load(self):
         """
             load the data from store dir or create store dir
             if not exists.
@@ -34,6 +35,7 @@ class JSONModel(Model):
         if os.path.exists(self.settings.store_dir):
             self.data = self._load_data(self.settings.store_dir)
             self.schuetzen = self._load_schuetzen(self.settings.store_dir)
+            self.events = self._load_events(self.settings.store_dir)
         else:
             os.makedirs(self.settings.store_dir)
 
@@ -56,6 +58,9 @@ class JSONModel(Model):
 
     def _load_schuetzen(self, dirpath):
         return self._generic_load_data(self.settings.schuetzen_file, JSONSchuetze)
+
+    def _load_events(self, dirpath):
+        return self._generic_load_data(self.settings.event_file, JSONEvent)
 
     def _generic_add_data(self, obj, filename):
         filepath = os.path.join(self.settings.store_dir, filename)
@@ -94,7 +99,6 @@ class JSONModel(Model):
         else:
             return False
 
-
     def add_satz(self, fullname, result, date):
         s = self.get_schuetze_by_fullname(fullname)
         entry = JSONSatz(
@@ -103,6 +107,13 @@ class JSONModel(Model):
             date=utils.to_timestamp(date))
         self.data.append(entry)
         self._generic_add_data(entry, self.settings.data_file)
+
+    def add_event(self, date, description):
+        entry = JSONEvent(
+            date=utils.to_timestamp(date),
+            description=description)
+        self.events.append(entry)
+        self._generic_add_data(entry, self.settings.event_file)
 
     def delete_schuetze(self, fullname):
         """
@@ -132,6 +143,14 @@ class JSONModel(Model):
             self.data.remove(entry)
         self._gerneric_rewrite_data(self.data, self.settings.data_file)
 
+    def delete_events(self, uuids):
+        remove = []
+        for entry in self.events:
+            if entry.uuid in uuids:
+                remove.append(entry)
+        for entry in remove:
+            self.events.remove(entry)
+        self._gerneric_rewrite_data(self.events, self.settings.event_file)
 
     def get_schuetze_by_uuid(self, uuid):
         schuetzen = self.get_all_schuetzen()
@@ -209,6 +228,24 @@ class JSONSchuetze(Schuetze):
         dic = {
             "name":self.name,
             "surname": self.surname,
+            "uuid": str(self.uuid)
+        }
+        return json.dumps(dic)
+
+class JSONEvent(Event):
+
+    @classmethod
+    def from_json(cls, jsonstring):
+        d = json.loads(jsonstring)
+        d["date"] = float(d["date"])
+        if "uuid" in d:
+            d["uuid"] = uuid.UUID(d["uuid"])
+        return cls(**d)
+
+    def to_json(self):
+        dic = {
+            "date": self.date,
+            "description": self.description,
             "uuid": str(self.uuid)
         }
         return json.dumps(dic)

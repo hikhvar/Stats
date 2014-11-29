@@ -111,3 +111,49 @@ class SatzCheckListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.CheckListCtrlMixin):
             del self.deleted[obj.uuid]
         else:
             self.deleted[obj.uuid] = obj
+
+class EventCheckListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.CheckListCtrlMixin):
+
+    def __init__(self, parent, *args, **kwargs):
+        wx.ListCtrl.__init__( self, parent, -1, style=wx.LC_REPORT|wx.LC_HRULES|wx.LC_VRULES)
+        wx.lib.mixins.listctrl.CheckListCtrlMixin.__init__(self)
+        self._make_clear()
+        self.data = []
+        self.deleted = {}
+        self.model = None
+
+    def set_model(self, model):
+        self.model = model
+        self.update_data()
+
+    def _make_clear(self):
+        """
+            first delete all columns than reset them empty.
+        """
+        self.ClearAll()
+        self.InsertColumn(0,"Datum", width=wx.LIST_AUTOSIZE)
+        self.InsertColumn(2,"Beschreibung", width=wx.LIST_AUTOSIZE)
+        self.InsertColumn(3,"UUID", width=wx.LIST_AUTOSIZE)
+
+    def update_data(self):
+        if self.model is None:
+            return
+        self.data = []
+        self._make_clear()
+        for entry in self.model.events:
+            self.data.append(entry)
+            info = [entry.get_human_readable_date(), entry.description, str(entry.uuid)]
+            self.Append(info)
+        if len(self.data) < 1:
+            colwidth = -2
+        else:
+            colwidth = -1
+        for col in xrange(3):
+            self.SetColumnWidth(col, colwidth)
+
+    def OnCheckItem(self, index, flag):
+        obj = self.data[index]
+        if not flag:
+            del self.deleted[obj.uuid]
+        else:
+            self.deleted[obj.uuid] = obj

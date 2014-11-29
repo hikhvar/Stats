@@ -10,4 +10,5 @@ class DefaultSettings(object):
         self.store_dir = "data"
         self.schuetzen_file = "schuetzen.json.gz"
         self.data_file = "data.json.gz"
+        self.event_file = "events.json.gz"
         self.model = model.json_model.CompressedJSONModel

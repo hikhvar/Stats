@@ -67,6 +67,19 @@ class Schuetze(object):
     def __str__(self):
         return "name: %s, surname: %s, uuid: %s" % (self.name, self.surname, self.uuid)
 
+class Event(object):
+
+    def __init__(self, date=None, description=None, uuid=None):
+        self.date = date
+        self.description = description
+        if uuid is None:
+            self.uuid = uuid_module.uuid4()
+        else:
+            self.uuid = uuid
+
+    def get_human_readable_date(self):
+        return utils.to_human_readable(self.date)
+
 class Satz(object):
 
     def __init__(self, schuetze_uuid=None, date=None, result=None, uuid=None):

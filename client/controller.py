@@ -11,12 +11,13 @@ class Controller(object):
     def __init__(self):
         self.settings = DefaultSettings()
         self.model = self.settings.model(self.settings)
-        self.model.load_data()
+        self.model.load()
 
     def set_mainframe(self, mainframe):
         self.mainframe = mainframe
         self._update_comboboxes()
         self.mainframe.SatzDeleteListCtrl.set_model(self.model)
+        self.mainframe.EventDeleteCtrl.set_model(self.model)
         self._apply_settings_entries()
 
     def OnEintrag(self, event):
@@ -85,6 +86,20 @@ class Controller(object):
         self._apply_settings_entries()
         self._update_comboboxes()
 
+    def OnEventDelete(self, event):
+        deleted = self.mainframe.EventDeleteCtrl.deleted.keys()
+        self.model.delete_events(deleted)
+        self.settings.enable_delete = False
+        self._apply_settings_entries()
+        self._update_comboboxes()
+
+    def OnEventEntry(self, event):
+        description = self.mainframe.text_ctrl_event_description.GetValue()
+        date = self.mainframe.datepicker_ctrl_event.GetValue()
+        date = self._to_datetime(date)
+        self.model.add_event(date, description)
+        self._update_comboboxes()
+
     def OnDeleteEnable(self, event):
         self.settings.enable_delete = event.IsChecked()
         self._apply_settings_entries()
@@ -94,6 +109,7 @@ class Controller(object):
         self.mainframe.DeleteEnableMenu.Check(self.settings.enable_delete)
         self.mainframe.button_delete.Enable(self.settings.enable_delete)
         self.mainframe.satz_delete.Enable(self.settings.enable_delete)
+        self.mainframe.button_event_delete.Enable(self.settings.enable_delete)
         self.mainframe.datepicker_ctrl_eintrag.Enable(self.settings.date_chooseable)
     
     def _update_comboboxes(self):
@@ -111,6 +127,7 @@ class Controller(object):
         if plot_modes is not None:
             self.mainframe.combo_box_plot_mode.SetItems(plot_modes)
         self.mainframe.SatzDeleteListCtrl.update_data()
+        self.mainframe.EventDeleteCtrl.update_data()
 
     def _to_datetime(self, wxDateTime):
         """
