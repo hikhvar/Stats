@@ -133,7 +133,8 @@ def _plot_activity(axis, df, events):
     for _, schuetzen in agg_schuetzen.iteritems():
         n.append(float(schuetzen))
     normed_y = np.array(y) / np.array(n)
-    axis.plot(x,normed_y,label="Erfasste Saetze pro Schuetze", marker="o")
+    label = mpl_umlaut(u"Erfasste Sätze pro Schütze")
+    axis.plot(x,normed_y,label=label, marker="o")
     #axis.plot(x, y, label="Saetze gesamt", marker="o")
     axis.plot(x, n, label="Schuetzen", marker="o")
 
@@ -196,7 +197,20 @@ def _make_events(axis, events, date_mapping):
         axis.axvline(date_mapping[event.get_human_readable_date()], linestyle="--", color="0.25")
         axis.text(date_mapping[event.get_human_readable_date()]+0.1,ypos, event.description, color="0.25")
 
-
+def mpl_umlaut(text):
+    new = r""
+    mapping = {
+        u"ö" : '$\\"o$',
+        u"ä" : '$\\"a$',
+        u"ü" : '$\\"u$'
+    }
+    for char in text:
+        print char
+        if char in mapping:
+            char = mapping[char]
+        new = new + char
+        print new
+    return new
 
 
 # Name of plot : (function, kwargs)
