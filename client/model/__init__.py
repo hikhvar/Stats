@@ -1,5 +1,8 @@
 import uuid as uuid_module
 import utils
+import collections
+import pandas as pd
+import numpy as np
 
 class Model (object):
     """
@@ -31,11 +34,63 @@ class Model (object):
         """
         return ["1.1.2013"]
 
+    def get_all_satz_entries(self):
+        """
+            return a list of all Satz objects 
+            stored in the model.
+        """
+        return [Satz()]
+
+    def get_all_event_entries(self):
+        """
+            return a list of all Event objects
+            stored in the model.
+        """
+        return [Event()]
+
+    def get_schuetze_by_uuid(self, uuid):
+        schuetzen = self.get_all_schuetzen()
+        for s in schuetzen:
+            if s.uuid == uuid:
+                return s
+
+    def get_schuetze_by_fullname(self, fullname):
+        schuetzen = self.get_all_schuetzen()
+        for s in schuetzen:
+            if s.get_fullname() == fullname:
+                return s
+
+    def get_pandas_dataframe(self):
+        def uuid_mapping(uuid):
+            s = self.get_schuetze_by_uuid(uuid)
+            return s.get_fullname()
+        data = collections.defaultdict(list)
+        for entry in self.get_all_satz_entries():
+            for key, value in entry.to_dict(uuid_mapping).iteritems():
+                data[key].append(value)
+        df = pd.DataFrame(data)
+        if len(df) >= 1:
+            df['human_readable'] = df.date.apply(utils.to_human_readable)
+        return df
+
     def get_all_stats(self, date):
-        """
-            return a list of lists with all stats.
-        """
-        return [["Noname", "1","54.5","50","0.1", "alle"]]
+        df = self.get_pandas_dataframe()
+        df = df[df.date == date]
+        grouped = df.groupby(df.schuetze)
+        agg = grouped["result"].agg(func=[min, max, np.mean, np.std])
+        retval = []
+        for schuetze, values in agg.iterrows():
+            tmp = [schuetze]
+            tmp.append(round(values["min"],1))
+            tmp.append(round(values["max"],1))
+            tmp.append(round(values["mean"],2))
+            tmp.append(round(values["std"],3))
+            results = list(grouped["result"].get_group(schuetze))
+            results = map(lambda x: round(x,1), results)
+            tmp.append(str(results)[1:-1])
+            
+            retval.append(tmp)
+        return retval
 
     def get_plot_modes(self):
         """
@@ -67,6 +122,7 @@ class Schuetze(object):
     def __str__(self):
         return "name: %s, surname: %s, uuid: %s" % (self.name, self.surname, self.uuid)
 
+
 class Event(object):
 
     def __init__(self, date=None, description=None, uuid=None):
@@ -79,6 +135,7 @@ class Event(object):
 
     def get_human_readable_date(self):
         return utils.to_human_readable(self.date)
+
 
 class Satz(object):
 
@@ -112,7 +169,3 @@ class Satz(object):
 
     def get_human_readable_date(self):
         return utils.to_human_readable(self.date)
-
-
-
-

@@ -139,4 +139,3 @@ class Controller(object):
         month = wxDateTime.GetMonth() + 1
         day = wxDateTime.GetDay()
         return datetime.datetime(year, month, day)
-
