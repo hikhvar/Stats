@@ -94,7 +94,7 @@ class SatzCheckListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.CheckListCtrlMixin):
             return
         self.data = []
         self._make_clear()
-        for entry in self.model.data:
+        for entry in self.model.get_all_satz_entries():
             self.data.append(entry)
             sch = self.model.get_schuetze_by_uuid(entry.schuetze_uuid)
             info = [sch.get_fullname(), entry.get_human_readable_date(), entry.result, str(entry.uuid)]
@@ -140,7 +140,7 @@ class EventCheckListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.CheckListCtrlMixin)
             return
         self.data = []
         self._make_clear()
-        for entry in self.model.events:
+        for entry in self.model.get_all_event_entries():
             self.data.append(entry)
             info = [entry.get_human_readable_date(), entry.description, str(entry.uuid)]
             self.Append(info)
