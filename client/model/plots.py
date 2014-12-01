@@ -50,10 +50,14 @@ def _plot_average(axis, df, events, plot_std = False):
         for date, mean in agg.iteritems():
             x.append(date_mapping[date])
             y.append(mean)
+        x, y = _sort_by_x(x, y)
         line = axis.plot(x,y, label=schuetze, marker="o")[0]
         if plot_std:
-            for _, i in std_agg.iteritems():
+            x = []
+            for date, i in std_agg.iteritems():
+                x.append(date_mapping[date])
                 std.append(i)
+            x, std = _sort_by_x(x, std)
             y = np.array(y)
             std = np.array(std)
             lower, upper = y - std, y + std
@@ -130,9 +134,13 @@ def _plot_activity(axis, df, events):
         x.append(date_mapping[date])
         y.append(saetze)
     n = []
-    for _, schuetzen in agg_schuetzen.iteritems():
+    nx = []
+    for date, schuetzen in agg_schuetzen.iteritems():
+        nx.append(date_mapping[date])
         n.append(float(schuetzen))
     normed_y = np.array(y) / np.array(n)
+    x, normed_y = _sort_by_x(x, normed_y)
+    _, n = _sort_by_x(nx, n)
     axis.plot(x,normed_y,label="Erfasste Saetze pro Schuetze", marker="o")
     #axis.plot(x, y, label="Saetze gesamt", marker="o")
     axis.plot(x, n, label="Schuetzen", marker="o")
@@ -146,13 +154,32 @@ def _plot_activity(axis, df, events):
 def _unique(series):
     return series.nunique()
 
+def _date_key_function(date):
+    """
+        computes a key to sort date strings.
+    """
+    day, month, year = date.split(".")
+    return int(day) + 31 * int(month) + 366 * int(year)
+
+def _sort_by_x(x,y):
+    """
+        sort the two arrays by the x value.
+    """
+    combined = zip(x,y)
+    retx = []
+    rety = []
+    for x, y in sorted(combined):
+        retx.append(x)
+        rety.append(y)
+    return retx, rety
+
 def _get_datemapping(df, events):
     """
         return the mapping of human_readable dates to 
         integer numbers for plotting. Mapping is a dict.
         Furthermore return a sorted list of the dates.
     """
-    dates = sorted(df.human_readable.unique())
+    dates = sorted(df.human_readable.unique(), key=_date_key_function)
     date_mapping = {}
     for index, d in enumerate(dates):
         date_mapping[d] = index
