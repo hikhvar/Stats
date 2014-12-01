@@ -113,19 +113,6 @@ class Model (object):
         dates = map(lambda x: utils.to_human_readable(x), dates)
         return dates
 
-    def get_plot_modes(self):
-        """
-            return a list of strings with all available plot modes.
-        """
-        return ["Not implemented"]
-
-    def draw_plot(self, mode, axis, start=None, end=None):
-        """
-            plot the requested mode on the given matplotlib axis.
-            The time interval is specified by the timestamps start and end.
-        """
-        pass
-
 
 class Schuetze(object):
 
