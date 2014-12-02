@@ -33,6 +33,9 @@ class Controller(object):
         else:
             self.model.add_satz(schuetze, result, date)
             self._update_comboboxes()
+            time = datetime.datetime.now()
+            timestr = time.strftime("%H:%M")
+            self.mainframe.text_ctrl_log.AppendText("%s\t%s\t%s\n" % (timestr, schuetze, result))
 
     def OnChangeStatsTermin(self, event):
         date = self.mainframe.combo_box_stats_pro_termin.GetValue()

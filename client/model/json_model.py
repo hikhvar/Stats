@@ -95,6 +95,7 @@ class JSONModel(Model):
             date=utils.to_timestamp(date))
         self.data.append(entry)
         self._generic_add_data(entry, self.settings.data_file)
+        return entry
 
     def add_event(self, date, description):
         entry = JSONEvent(
