@@ -19,7 +19,7 @@ from customWidgets import SchuetzenListCtrl
 class MainFrame(wx.Frame):
     def __init__(self, controller, *args, **kwds):
         # begin wxGlade: MainFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = wx.ICONIZE | wx.CAPTION | wx.MINIMIZE | wx.CLOSE_BOX | wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.RESIZE_BORDER | wx.CLIP_CHILDREN
         wx.Frame.__init__(self, *args, **kwds)
         
         # Menu Bar
@@ -42,6 +42,8 @@ class MainFrame(wx.Frame):
         self.datepicker_ctrl_eintrag = wx.DatePickerCtrl(self.notebook_1_pane_Eingabe, wx.ID_ANY)
         self.panel_5 = wx.Panel(self.notebook_1_pane_Eingabe, wx.ID_ANY)
         self.button_eintragen = wx.Button(self.notebook_1_pane_Eingabe, wx.ID_ANY, _("Eintragen"))
+        self.panel_9 = wx.Panel(self.notebook_1_pane_Eingabe, wx.ID_ANY)
+        self.text_ctrl_log = wx.TextCtrl(self.notebook_1_pane_Eingabe, wx.ID_ANY, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.notebook_1_pane_pro_termin = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.label_4 = wx.StaticText(self.notebook_1_pane_pro_termin, wx.ID_ANY, _("Termin"))
         self.combo_box_stats_pro_termin = wx.ComboBox(self.notebook_1_pane_pro_termin, wx.ID_ANY, choices=[], style=wx.CB_DROPDOWN)
@@ -105,6 +107,7 @@ class MainFrame(wx.Frame):
         # begin wxGlade: MainFrame.__set_properties
         self.SetTitle(_("Schuss'N Ofen Stats"))
         self.SetSize((978, 656))
+        self.text_ctrl_log.SetMinSize((200, 400))
         # end wxGlade
 
     def __do_layout(self):
@@ -123,7 +126,7 @@ class MainFrame(wx.Frame):
         sizer_4 = wx.StaticBoxSizer(self.sizer_4_staticbox, wx.HORIZONTAL)
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
-        grid_sizer_3 = wx.FlexGridSizer(4, 2, 0, 0)
+        grid_sizer_3 = wx.FlexGridSizer(5, 2, 0, 0)
         grid_sizer_3.Add(self.label_5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         grid_sizer_3.Add(self.combo_box_schuetze, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_3.Add(self.label_ringe, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
@@ -132,6 +135,8 @@ class MainFrame(wx.Frame):
         grid_sizer_3.Add(self.datepicker_ctrl_eintrag, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_3.Add(self.panel_5, 1, wx.EXPAND, 0)
         grid_sizer_3.Add(self.button_eintragen, 0, wx.ALL | wx.EXPAND | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_3.Add(self.panel_9, 1, wx.EXPAND, 0)
+        grid_sizer_3.Add(self.text_ctrl_log, 0, wx.TOP, 10)
         self.notebook_1_pane_Eingabe.SetSizer(grid_sizer_3)
         sizer_5.Add(self.label_4, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 5)
         sizer_5.Add(self.combo_box_stats_pro_termin, 0, 0, 0)
