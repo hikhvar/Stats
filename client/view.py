@@ -19,7 +19,7 @@ from customWidgets import SchuetzenListCtrl
 class MainFrame(wx.Frame):
     def __init__(self, controller, *args, **kwds):
         # begin wxGlade: MainFrame.__init__
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE
+        kwds["style"] = wx.ICONIZE | wx.CAPTION | wx.MINIMIZE | wx.CLOSE_BOX | wx.MINIMIZE_BOX | wx.MAXIMIZE_BOX | wx.SYSTEM_MENU | wx.RESIZE_BORDER | wx.CLIP_CHILDREN
         wx.Frame.__init__(self, *args, **kwds)
         
         # Menu Bar
@@ -104,6 +104,9 @@ class MainFrame(wx.Frame):
     def __set_properties(self):
         # begin wxGlade: MainFrame.__set_properties
         self.SetTitle(_("Schuss'N Ofen Stats"))
+        _icon = wx.EmptyIcon()
+        _icon.CopyFromBitmap(wx.Bitmap("/home/christoph/GIT/Stats/client/resources/logo.bmp", wx.BITMAP_TYPE_ANY))
+        self.SetIcon(_icon)
         self.SetSize((978, 656))
         # end wxGlade
 
