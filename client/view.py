@@ -105,7 +105,7 @@ class MainFrame(wx.Frame):
         # begin wxGlade: MainFrame.__set_properties
         self.SetTitle(_("Schuss'N Ofen Stats"))
         _icon = wx.EmptyIcon()
-        _icon.CopyFromBitmap(wx.Bitmap("/home/christoph/GIT/Stats/client/resources/logo.bmp", wx.BITMAP_TYPE_ANY))
+        _icon.CopyFromBitmap(wx.Bitmap("resources/logo.bmp", wx.BITMAP_TYPE_ANY))
         self.SetIcon(_icon)
         self.SetSize((978, 656))
         # end wxGlade
