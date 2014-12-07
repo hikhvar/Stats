@@ -87,10 +87,19 @@ class Model (object):
             tmp.append(round(values["std"],3))
             results = list(grouped["result"].get_group(schuetze))
             results = map(lambda x: round(x,1), results)
-            tmp.append(str(results)[1:-1])
-            
+            #tmp.append(str(results)[1:-1])
+            tmp.append(len(results))
+            tmp.append(self._format_all_results(results))
             retval.append(tmp)
         return retval
+
+    def _format_all_results(self, results):
+        ret = ""
+        for index, res in enumerate(results):
+             if index % 10 == 0:
+                 ret+="\n"
+             ret+=", %s" % res
+        return ret
 
     def schuetze_exists(self, fullname):
         """

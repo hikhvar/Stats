@@ -20,7 +20,8 @@ class SchuetzenListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.InsertColumn(2,"Bester", width=wx.LIST_AUTOSIZE_USEHEADER)
         self.InsertColumn(3,"Mittelwert", width=wx.LIST_AUTOSIZE_USEHEADER)
         self.InsertColumn(4,"Standard Abweichung", width=wx.LIST_AUTOSIZE_USEHEADER)
-        self.InsertColumn(5,"Alle", width=wx.LIST_AUTOSIZE)
+        self.InsertColumn(5,"Anzahl", width=wx.LIST_AUTOSIZE_USEHEADER)
+        self.InsertColumn(6,"Alle", width=wx.LIST_AUTOSIZE)
         self.itemDataMap = schuetzen
         self.SetItemCount(len(schuetzen))
         self.Bind(wx.EVT_LIST_COL_CLICK, self.OnColClick)
