@@ -8,10 +8,16 @@ import model.plots as plots
 
 class Controller(object):
 
-    def __init__(self):
-        self.settings = DefaultSettings()
-        self.model = self.settings.model(self.settings)
-        self.model.load()
+    def __init__(self, settings = None, model=None):
+        if settings is None:
+            self.settings = DefaultSettings()
+        else:
+            self.settings = settings
+        if model is None:
+            self.model = self.settings.model(self.settings)
+            self.model.load()
+        else:
+            self.model = model
 
     def set_mainframe(self, mainframe):
         self.mainframe = mainframe

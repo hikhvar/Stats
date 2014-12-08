@@ -3,11 +3,33 @@ from controller import Controller
 from view import MainFrame
 import gettext
 import os.path
+import argparse
+from settings import DefaultSettings
+import model.modeltest as mt
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Small desktop application to store and view results for Luftgewehr shooting.')
+    parser.add_argument('--perftest', dest='perftest', action='store_true',
+                   default=False,
+                   help='Populate the model with performance data.')
+
+    return parser.parse_args()
 
 def main():
+    args = parse_args()
     gettext.install("schiessdb") # replace with the appropriate catalog name
     app = wx.App()
-    frame = MainFrame(Controller(), None, wx.ID_ANY, "")
+    if args.perftest:
+        settings = DefaultSettings()
+        settings.store_dir = "perfdata"
+        model = settings.model(settings)
+        model.load()
+        t = mt.populate_model(model)
+        print "Took ", t, " seconds to perform population test."
+    else:
+        model = None
+    frame = MainFrame(Controller(model=model), None, wx.ID_ANY, "")
     _icon = wx.EmptyIcon()
     iconpath = os.path.join(os.path.dirname(__file__), "resources/logo.bmp")
     _icon.CopyFromBitmap(wx.Bitmap(iconpath, wx.BITMAP_TYPE_ANY))
