@@ -107,7 +107,7 @@ class MainFrame(wx.Frame):
         # begin wxGlade: MainFrame.__set_properties
         self.SetTitle(_("Schuss'N Ofen Stats"))
         self.SetSize((978, 656))
-        self.text_ctrl_log.SetMinSize((200, 400))
+        self.text_ctrl_log.SetMinSize((250, 400))
         # end wxGlade
 
     def __do_layout(self):
@@ -138,6 +138,7 @@ class MainFrame(wx.Frame):
         grid_sizer_3.Add(self.panel_9, 1, wx.EXPAND, 0)
         grid_sizer_3.Add(self.text_ctrl_log, 0, wx.TOP, 10)
         self.notebook_1_pane_Eingabe.SetSizer(grid_sizer_3)
+        grid_sizer_3.AddGrowableRow(4)
         sizer_5.Add(self.label_4, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 5)
         sizer_5.Add(self.combo_box_stats_pro_termin, 0, 0, 0)
         sizer_3.Add(sizer_5, 0, wx.EXPAND, 0)
