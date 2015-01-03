@@ -15,12 +15,17 @@ opts = {'py2exe':
 	'excludes':['_gtkagg', '_tkagg', '_agg2', '_cairo', '_cocoaagg', '_fltkagg', '_gtk', '_gtkcairo', 'scipy'], 
 	'dll_excludes': ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll']}}
 
-data_files = [("Microsoft.VC90.CRT", 
-    glob(r'C:\Windows\winsxs\x86_microsoft.vc90\*.*'))]
+#data_files = [("Microsoft.VC90.CRT", 
+#    glob(r'C:\Windows\winsxs\x86_microsoft.vc90\*.*'))]
+
+data_files = [("resources",["resources/logo.bmp"])]
+data_files.extend(matplotlib.get_py2exe_datafiles())
+print data_files
+
 packages=[
     'pandas',
     'matplotlib',
     'numpy'
 ]
 
-setup(windows=['schiessdb.py'],zipfile="library.zip",options=opts,data_files=matplotlib.get_py2exe_datafiles())
+setup(windows=['schiessdb.py'],zipfile="library.zip",options=opts,data_files=data_files)
