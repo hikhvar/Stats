@@ -30,7 +30,10 @@ class SchuetzenListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.ColumnSorterMixin):
         event.Skip()
 
     def OnGetItemText(self, item, col):
-        s = self.itemDataMap[item][col]
+        try:
+            s = self.itemDataMap[item][col]
+        except:
+            s = ""
         return str(s)
 
     def GetListCtrl(self):
