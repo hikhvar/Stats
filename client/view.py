@@ -229,6 +229,7 @@ class MainFrame(wx.Frame):
 
     def OnEventDelete(self, event):  # wxGlade: MainFrame.<event_handler>
         self.controller.OnEventDelete(event)
+
         
 # end of class MainFrame
 if __name__ == "__main__":

@@ -25,16 +25,29 @@ class SchuetzenListCtrl(wx.ListCtrl, wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.itemDataMap = schuetzen
         self.SetItemCount(len(schuetzen))
         self.Bind(wx.EVT_LIST_COL_CLICK, self.OnColClick)
+        self.sortcolumn = 0
+        self.ascending = True
 
-    def OnColClick(self,event):
-        event.Skip()
+    def OnColClick(self, event):
+        if self.sortcolumn == event.GetColumn():
+            self.ascending = not self.ascending
+        else:
+            self.ascending = True
+            self.sortcolumn = event.GetColumn()
+        self.sort_data()
 
     def OnGetItemText(self, item, col):
-        s = self.itemDataMap[item][col]
+        try:
+            s = self.itemDataMap[item][col]
+        except:
+            s = ""
         return str(s)
 
     def GetListCtrl(self):
         return self
+
+    def sort_data(self):
+        self.itemDataMap = sorted(self.itemDataMap, key=lambda x: x[self.sortcolumn], reverse=not self.ascending)
 
     def update_data(self, schuetzen):
         valid = isinstance(schuetzen, list)
