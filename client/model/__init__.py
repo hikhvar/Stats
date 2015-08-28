@@ -32,7 +32,14 @@ class Model (object):
         """ 
             return a list of dates with shooting results.
         """
-        return ["1.1.2013"]
+        dates = set([])
+        for entry in self.get_all_satz_entries():
+            dates.add(entry.date)
+        if len(dates) == 0:
+            return None
+        dates = sorted(list(dates))
+        dates = map(lambda x: utils.to_human_readable(x), dates)
+        return dates
 
     def get_all_satz_entries(self):
         """
@@ -112,15 +119,6 @@ class Model (object):
                 return True
         return False
 
-    def get_all_dates(self):
-        dates = set([])
-        for entry in self.get_all_satz_entries():
-            dates.add(entry.date)
-        if len(dates) == 0:
-            return None
-        dates = sorted(list(dates))
-        dates = map(lambda x: utils.to_human_readable(x), dates)
-        return dates
 
 
 class Schuetze(object):

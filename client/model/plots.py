@@ -20,18 +20,6 @@ def draw_plot(mode, axis, dataframe, events, start=None, end=None):
     df = dataframe[(dataframe.date >= start) & (dataframe.date <=end)]
     function, kwargs = REGISTERED_PLOTS[mode]
     function(axis, df, events, **kwargs)
-    # if mode == "Verlauf des Durchschnitts":
-    #     _plot_average(axis, df)
-    # if mode == "Verlauf der Abweichung":
-    #     _plot_average(axis, df, True)
-    # if mode == "Theo. Verteilung":
-    #     _plot_distribution(axis, df)
-    # if mode == "Verteilung":
-    #     _plot_histogram(axis, df)
-    # if mode == "Team Verteilung mean":
-    #     _plot_team_distribution(axis, df, _sort_mean_first)
-    # if mode == "Team Verteilung std.":
-    #     _plot_team_distribution(axis, df, _sort_std_first)
 
 def normpdf(x, mu, sigma):
     u = (x-mu)/(1.0 * np.abs(sigma))
@@ -234,5 +222,5 @@ REGISTERED_PLOTS = {
     "Verteilung"                    : (_plot_histogram, {}),
     "Team Verteilung mean"          : (_plot_team_distribution, {"sort_function":_sort_mean_first}),
     "Team Verteilung std."          : (_plot_team_distribution, {"sort_function":_sort_std_first}),
-    "Beteiligung"                     : (_plot_activity, {})
+    "Beteiligung"                   : (_plot_activity, {})
 }
